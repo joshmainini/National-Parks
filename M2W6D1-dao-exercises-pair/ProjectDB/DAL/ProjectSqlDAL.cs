@@ -12,6 +12,9 @@ namespace ProjectDB.DAL
     {
         private string connectionString;
         private const string SQL_GetAllProjects = "SELECT * FROM project";
+        private const string SQL_CreateProject = @"INSERT INTO project VALUES (@name, @StartDate, @ToDate)";
+        private const string SQL_AssignProject = @"INSERT INTO project_employee VALUES (@projectId, @employeeId)";
+        private const string SQL_DeleteProject = @"DELETE FROM project_employee WHERE project_id = @projectId AND employee_id = @employeeId";
 
         // Single Parameter Constructor
         public ProjectSqlDAL(string dbConnectionString)
@@ -53,17 +56,69 @@ namespace ProjectDB.DAL
 
         public bool AssignEmployeeToProject(int projectId, int employeeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(SQL_AssignProject, conn);
+                    cmd.Parameters.AddWithValue("@projectId", projectId);
+                    cmd.Parameters.AddWithValue("@employeeId", employeeId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException e)
+            {
+                throw;
+            }
         }
 
         public bool RemoveEmployeeFromProject(int projectId, int employeeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(SQL_DeleteProject, conn);
+                    cmd.Parameters.AddWithValue("@projectId", projectId);
+                    cmd.Parameters.AddWithValue("@employeeId", employeeId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException e)
+            {
+                throw;
+            }
         }
 
         public bool CreateProject(Project newProject)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(SQL_CreateProject, conn);
+                    cmd.Parameters.AddWithValue("@name", newProject.Name);
+                    cmd.Parameters.AddWithValue("@StartDate", newProject.StartDate);
+                    cmd.Parameters.AddWithValue("@ToDate", newProject.EndDate);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException e)
+            {
+                throw;
+            }
         }
 
     }
