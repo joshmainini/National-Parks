@@ -23,32 +23,32 @@ namespace ProjectDB.DAL
 
         public List<Department> GetDepartments()
         {
-			List<Department> output = new List<Department>();
+	        List<Department> output = new List<Department>();
 
-			try
-			{
-				using (SqlConnection conn = new SqlConnection(connectionString))
-				{
-					conn.Open();
+	        try
+	        {
+		        using (SqlConnection conn = new SqlConnection(connectionString))
+		        {
+			        conn.Open();
 
-					SqlCommand cmd = new SqlCommand(SQL_GetDepartment, conn);
-					SqlDataReader reader = cmd.ExecuteReader();
+			        SqlCommand cmd = new SqlCommand(SQL_GetDepartment, conn);
+			        SqlDataReader reader = cmd.ExecuteReader();
 
-					while (reader.Read())
-					{
-						Department d = new Department();
-						d.Id = Convert.ToInt32(reader["department_id"]);
-						d.Name = Convert.ToString(reader["name"]);
+			        while (reader.Read())
+			        {
+				        Department d = new Department();
+				        d.Id = Convert.ToInt32(reader["department_id"]);
+				        d.Name = Convert.ToString(reader["name"]);
 
-						output.Add(d);
-					}
-				}
-			}
-			catch (SqlException e)
-			{
-				throw;
-			}
-			return output;
+				        output.Add(d);
+			        }
+		        }
+	        }
+	        catch (SqlException e)
+	        {
+		        throw;
+	        }
+	        return output;
         }
 
         public bool CreateDepartment(Department newDepartment)
