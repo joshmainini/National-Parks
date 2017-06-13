@@ -18,7 +18,7 @@ namespace ProjectDBTest
 
 		[TestInitialize]
 		public void Initialize()
-		{
+		{   
 			tran = new TransactionScope();
 
 		}
@@ -44,7 +44,7 @@ namespace ProjectDBTest
 			EmployeeSqlDAL employee = new EmployeeSqlDAL(connectionString);
 			List<Employee> employees = employee.GetEmployeesWithoutProjects();
 
-			Assert.AreEqual(2, employees.Count);
+			Assert.AreEqual(1, employees.Count);
 		}
 		[TestMethod]
 		public void SearchTest()
