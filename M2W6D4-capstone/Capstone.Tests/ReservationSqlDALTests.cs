@@ -14,9 +14,10 @@ namespace Capstone.Tests
     public class ReservationSqlDALTests
     {
         private TransactionScope tran;
-        private string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
+        private string connectionString = @"Data Source=localhost\sqlexpress;Initial Catalog = NationalPark; Integrated Security = True";
+		   /*ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;*/
 
-        [TestInitialize]
+		   [TestInitialize]
         public void Initialize()
         {
             tran = new TransactionScope();
@@ -35,18 +36,18 @@ namespace Capstone.Tests
         [TestMethod]
         public void GetAvailableSitesTest()
         {
-            List<int> siteIds = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+			int campgroundId = 1;
             List<Site> result = new List<Site>();
             ReservationSqlDAL reservation = new ReservationSqlDAL(connectionString);
 
 
-            result = reservation.GetAvailableSites(siteIds, Convert.ToDateTime("2017-06-24"), Convert.ToDateTime("2017-06-25"));
+            result = reservation.GetAvailableSites(Convert.ToDateTime("2017-06-24"), Convert.ToDateTime("2017-06-25"), campgroundId);
 
             Assert.AreEqual(9, result.Count);
 
-            result = reservation.GetAvailableSites(siteIds, Convert.ToDateTime("2017-06-13"), Convert.ToDateTime("2017-06-17"));
+			result = reservation.GetAvailableSites(Convert.ToDateTime("2017-06-13"), Convert.ToDateTime("2017-06-17"), campgroundId);
 
-            Assert.AreEqual(5, result.Count);
+            Assert.AreEqual(6, result.Count);
         }
 
         [TestMethod]

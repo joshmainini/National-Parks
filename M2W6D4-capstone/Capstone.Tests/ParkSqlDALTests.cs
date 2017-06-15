@@ -17,9 +17,10 @@ namespace Capstone.Tests
     public class ParkSqlDALTests
     {
         private TransactionScope tran;
-        private string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
+		private string connectionString = @"Data Source=localhost\sqlexpress;Initial Catalog = NationalPark; Integrated Security = True";
+		//private string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
 
-        [TestInitialize]
+		[TestInitialize]
         public void Initialize()
         {
             tran = new TransactionScope();
