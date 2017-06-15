@@ -19,8 +19,9 @@ namespace Capstone.DAL
 
 		public List<Park> GetAllParks()
 		{
+            //Should be sorted alphabetically
 			List<Park> parks = new List<Park>();
-
+            
 			try
 			{
 				using (SqlConnection conn = new SqlConnection(connectionString))

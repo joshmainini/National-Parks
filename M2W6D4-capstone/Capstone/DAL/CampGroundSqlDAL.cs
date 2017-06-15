@@ -19,9 +19,37 @@ namespace Capstone.DAL
 
 		public List<CampGround> GetCampGrounds(int parkId)
 		{
+            //GetCampGrounds will retrieve all campgrounds within the selected park. 
+            List<CampGround> output = new List<CampGround>();
 
-			//GetCampGrounds will retrieve all campgrounds within the selected park. 
-			return new List<CampGround>(); 
+            try
+            {
+                using(SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM campground WHERE park_id = @parkId", conn);
+                    cmd.Parameters.AddWithValue("@parkId", parkId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while(reader.Read())
+                    {
+                        CampGround c = new CampGround();
+                        c.ParkId = parkId;
+                        c.Name = Convert.ToString(reader["name"]);
+                        c.OpenFrom = Convert.ToInt32(reader["open_from_mm"]);
+                        c.OpenTo = Convert.ToInt32(reader["open_to_mm"]);
+                        c.DailyFee = Convert.ToDecimal(reader["daily_fee"]);
+
+                        output.Add(c);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Something went wrong with the campground data, please try again later");
+            }
+
+            return output; 
 		}
 
 	}
