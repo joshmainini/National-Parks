@@ -38,7 +38,7 @@ namespace ProjectDBTest
 			List<Department> department = departments.GetDepartments();
 
 			Assert.IsNotNull(department);
-			Assert.AreEqual(8, department.Count());
+			Assert.AreEqual(4, department.Count());
 		}
 		[TestMethod]
 		public void CreateDepartmentTest()
