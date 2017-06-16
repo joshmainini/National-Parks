@@ -14,7 +14,7 @@ namespace Capstone.Tests
     public class SiteSqlDALTest
     {
         private TransactionScope tran;
-		private string connectionString = @"Data Source=localhost\sqlexpress;Initial Catalog = NationalPark; Integrated Security = True";
+		private string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
 		//private string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
 
 		[TestInitialize]

@@ -30,17 +30,24 @@ namespace Capstone.DAL
 				{
 					conn.Open();
 
-					SqlCommand cmd = new SqlCommand(@"SELECT site.site_id, site.site_number, site.max_occupancy, site.accessible, site.max_rv_length, site.utilities, DATEDIFF(d,reservation.from_date, reservation.to_date) * campground.daily_fee AS total_cost
-					FROM site JOIN reservation on reservation.site_id = site.site_id 
-					JOIN campground ON campground.campground_id = site.campground_id
-					WHERE site.campground_id = @campgroundId 
-					AND (MONTH(@fromDate) > campground.open_from_mm AND MONTH(@toDate) < campground.open_to_mm) ", conn);
+                    SqlCommand cmd = new SqlCommand(@"SELECT campground.campground_id, site.site_id, site.site_number, site.max_occupancy, site.accessible, site.max_rv_length, site.utilities, DATEDIFF(d,@fromDate, @toDate) * campground.daily_fee AS total_cost
+                    FROM site  
+                    JOIN campground ON campground.campground_id = site.campground_id
+                    WHERE site.campground_id = @campgroundId AND (MONTH(@fromDate) > campground.open_from_mm AND MONTH(@toDate) < campground.open_to_mm) 
+                    AND site.site_id NOT IN ( 
+	                SELECT site.site_id FROM reservation JOIN site ON site.site_id = reservation.site_id 
+	                WHERE site.campground_id = @campgroundId
+	                AND from_date >= @fromDate AND from_date <= @fromDate
+                    OR to_date >= @toDate AND to_date <= @toDate
+                    OR from_date <= @fromDate AND to_date >= @toDate)    ", conn);
 
-					cmd.Parameters.AddWithValue("@campgroundId", campgroundId);
+
+                    cmd.Parameters.AddWithValue("@campgroundId", campgroundId);
 					cmd.Parameters.AddWithValue("@fromDate", fromDate);
 					cmd.Parameters.AddWithValue("@toDate", toDate);
 
-					SqlDataReader reader = cmd.ExecuteReader();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
 					while (reader.Read())
 					{
 						Site s = new Site();
@@ -55,29 +62,6 @@ namespace Capstone.DAL
 
 						output.Add(s);
 					}
-					SqlCommand cmd1 = new SqlCommand("SELECT * FROM reservation JOIN site ON site.site_id = reservation.site_id WHERE" +
-						" site.campground_id = @campgroundId AND @fromDate >= from_date AND @toDate <= to_date", conn);
-
-					cmd1.Parameters.AddWithValue("@campgroundId", campgroundId);
-					cmd1.Parameters.AddWithValue("@fromDate", fromDate);
-					cmd1.Parameters.AddWithValue("@toDate", toDate);
-					List<int> reservedSites = new List<int>();
-
-					while (reader.Read())
-					{
-						reservedSites.Add(Convert.ToInt32(reader["site_id"]));
-					}
-
-					foreach (int siteId in reservedSites)
-					{
-						for (int i = 0; i < output.Count; i++)
-						{
-							if (output[i].SiteId == siteId)
-							{
-								output.Remove(output[i]);
-							}
-						}
-					}
 
 				}
 
@@ -90,7 +74,7 @@ namespace Capstone.DAL
 
 		}
 
-		public int SetUpReservation(int site_id, string name, DateTime toDate, DateTime fromDate)
+		public int SetUpReservation(int siteId, string name, DateTime toDate, DateTime fromDate)
 		{
 			int id = 0;
 			try
@@ -99,14 +83,17 @@ namespace Capstone.DAL
 				{
 					conn.Open();
 
-					SqlCommand cmd = new SqlCommand("BEGIN TRANSACTION INSERT INTO reservation(site_id, name, from_date, to_date) VALUES" +
-					"(@site_id, @name, @fromDate, @toDate) SELECT * FROM reservation" +
-					"WHERE site_id = @site_id COMMIT TRANSACTION;", conn);
+					SqlCommand cmd = new SqlCommand(@"BEGIN TRANSACTION " +
+                     "INSERT INTO reservation(site_id, name, from_date, to_date) " +
+                     "VALUES (@siteId, @name, @fromDate, @toDate); " +
+                     "SELECT * FROM reservation" +
+					 " WHERE site_id = @siteId " +
+                     "COMMIT TRANSACTION;", conn);
 
 					cmd.Parameters.AddWithValue("@name", name);
-					cmd.Parameters.AddWithValue("@site_id", name);
-					cmd.Parameters.AddWithValue("@toDate", name);
-					cmd.Parameters.AddWithValue("@fromDate", name);
+					cmd.Parameters.AddWithValue("@siteId", siteId);
+					cmd.Parameters.AddWithValue("@toDate", toDate);
+					cmd.Parameters.AddWithValue("@fromDate", fromDate);
 					SqlDataReader reader = cmd.ExecuteReader();
 					while (reader.Read())
 					{
