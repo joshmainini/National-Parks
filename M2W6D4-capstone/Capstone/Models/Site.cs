@@ -8,13 +8,70 @@ namespace Capstone.Models
 {
 	public class Site
 	{
+		private string accessible;
+		private string maxOccupancy;
+		private string maxRvLength;
+		private string utilities;
+
 		public int SiteId { get; set; }
 		public int CampgroundId { get; set; }
 		public int SiteNumber { get; set; }
 		public int MaxOccupancy { get; set; }
-		public int Accessible { get; set; }
-		public int MaxRvLength { get; set; }
-		public int Utilities { get; set; }
+
+		public string Accessible
+		{
+			get
+			{
+				return accessible;
+			}
+			set
+			{
+
+				if (value == "0")
+				{
+					accessible = "No";
+				}
+				else
+				{
+					accessible = "Yes";
+				}
+			}
+		}
+								 
+		public string MaxRvLength
+		{
+			get
+			{
+				return maxRvLength;
+			}
+			set
+			{
+				if (value == "0")
+				{
+					maxRvLength = "N/A";
+				}
+				
+			}
+		}
+		public string Utilities
+		{
+			get
+			{
+				return utilities;
+			}
+			set
+			{
+
+				if (value == "0")
+				{
+					utilities = "N/A";
+				}
+				else
+				{
+					utilities = "Yes";
+				}
+			}
+		}
         public decimal TotalCost { get; set; }
 	}
 }

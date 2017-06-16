@@ -55,9 +55,9 @@ namespace Capstone.DAL
 						s.SiteId = Convert.ToInt32(reader["site_id"]);
 						s.SiteNumber = Convert.ToInt32(reader["site_number"]);
 						s.MaxOccupancy = Convert.ToInt32(reader["max_occupancy"]);
-						s.Accessible = Convert.ToInt32(reader["accessible"]);
-						s.MaxRvLength = Convert.ToInt32(reader["max_rv_length"]);
-						s.Utilities = Convert.ToInt32(reader["utilities"]);
+						s.Accessible = Convert.ToString(reader["accessible"]);
+						s.MaxRvLength = Convert.ToString(reader["max_rv_length"]);
+						s.Utilities = Convert.ToString(reader["utilities"]);
 						s.TotalCost = Convert.ToDecimal(reader["total_cost"]);
 
 						output.Add(s);

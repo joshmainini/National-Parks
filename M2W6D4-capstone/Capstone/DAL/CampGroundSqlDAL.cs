@@ -39,6 +39,7 @@ namespace Capstone.DAL
                         c.OpenFrom = Convert.ToInt32(reader["open_from_mm"]);
                         c.OpenTo = Convert.ToInt32(reader["open_to_mm"]);
                         c.DailyFee = Convert.ToDecimal(reader["daily_fee"]);
+						c.CampgroundId = Convert.ToInt32(reader["campground_id"]);
 
                         output.Add(c);
                     }
