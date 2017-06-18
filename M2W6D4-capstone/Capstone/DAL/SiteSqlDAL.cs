@@ -80,42 +80,6 @@ namespace Capstone.DAL
             return output;
 
         }
-
-        public List<Site> GetSites(int campGroundId)
-		{
-            //GetCampGrounds will retrieve all campgrounds within the selected park. 
-            List<Site> output = new List<Site>();
-
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM site WHERE campground_id = @campgroundId", conn);
-                    cmd.Parameters.AddWithValue("@campgroundId", campGroundId);
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Site s = new Site();
-                        s.CampgroundId = campGroundId;
-                        s.SiteNumber = Convert.ToInt32(reader["site_number"]);
-                        s.MaxOccupancy = Convert.ToInt32(reader["max_occupancy"]);
-                        s.Accessible = Convert.ToString(reader["accessible"]);
-                        s.MaxRvLength = Convert.ToString(reader["max_rv_length"]);
-                        s.Utilities = Convert.ToString(reader["utilities"]);
-
-                        output.Add(s);
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine("Something went wrong with the site data, please try again later");
-            }
-
-            return output;
-        }
     }
 }
 

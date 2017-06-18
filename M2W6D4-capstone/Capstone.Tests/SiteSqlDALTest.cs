@@ -32,15 +32,5 @@ namespace Capstone.Tests
         {
             tran.Dispose();
         }
-
-        [TestMethod]
-        public void GetSitesTest()
-        {
-            List<Site> result = new List<Site>();
-            SiteSqlDAL site = new SiteSqlDAL(connectionString);
-            result = site.GetSites(1);
-
-            Assert.AreEqual(12, result.Count);
-        }
     }
 }
