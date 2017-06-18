@@ -30,16 +30,23 @@ namespace Capstone.DAL
 				{
 					conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT campground.campground_id, site.site_id, site.site_number, site.max_occupancy, site.accessible, site.max_rv_length, site.utilities, DATEDIFF(d,@fromDate, @toDate) * campground.daily_fee AS total_cost
-                    FROM site  
-                    JOIN campground ON campground.campground_id = site.campground_id
-                    WHERE site.campground_id = @campgroundId AND (MONTH(@fromDate) > campground.open_from_mm AND MONTH(@toDate) < campground.open_to_mm) 
-                    AND site.site_id NOT IN ( 
-	                SELECT site.site_id FROM reservation JOIN site ON site.site_id = reservation.site_id 
-	                WHERE site.campground_id = @campgroundId
-	                AND from_date >= @fromDate AND from_date <= @fromDate
-                    OR to_date >= @toDate AND to_date <= @toDate
-                    OR from_date <= @fromDate AND to_date >= @toDate)    ", conn);
+                    SqlCommand cmd = new SqlCommand(
+                        @"SELECT campground.campground_id, site.site_id, site.site_number, site.max_occupancy, site.accessible, site.max_rv_length, site.utilities, DATEDIFF(d,@fromDate, @toDate) * campground.daily_fee AS total_cost
+                        FROM site  
+                        JOIN campground ON campground.campground_id = site.campground_id
+                        WHERE site.campground_id = @campgroundId 
+                        AND (MONTH(@fromDate) > campground.open_from_mm 
+                        AND MONTH(@toDate) < campground.open_to_mm) 
+                        AND site.site_id NOT IN ( 
+                        SELECT DISTINCT site.site_id FROM reservation 
+                        JOIN site ON site.site_id = reservation.site_id 
+                        WHERE site.campground_id = @campgroundId
+                        AND (
+                        (from_date >= @fromDate AND from_date <= @fromDate)
+                        OR (to_date >= @toDate AND to_date <= @toDate)
+                        OR (from_date <= @fromDate AND to_date >= @toDate)
+                        OR (from_date <= @toDate AND to_date >= @fromDate))
+                        )", conn);
 
 
                     cmd.Parameters.AddWithValue("@campgroundId", campgroundId);
