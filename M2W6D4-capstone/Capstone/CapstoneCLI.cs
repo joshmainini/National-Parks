@@ -17,31 +17,26 @@ namespace Capstone
 		private string connectionString = "";
 
 
-		public CapstoneCLI(string connectionString)
+        public CapstoneCLI(string connectionString)
 		{
 			this.connectionString = connectionString;
 			
 		}
 		public void RunCLI()
 		{
-            bool x = true;
-			
 
-			while (x)
-			{
-                x = ViewParks();
-            }
+		    ViewParks();
+            
 		}
 
 		public void GetParkInfo(Park park)
 		{
-			const string command_ViewCampgrounds = "1";
+            const string command_ViewCampgrounds = "1";
 			const string command_SearchReservation = "2";
-			const string command_ReturnToPrevious = "3";
+            const string command_ReturnToPrevious = "3";
+			
             CampGroundSqlDAL campground = new CampGroundSqlDAL(connectionString);
             List<CampGround> allCampgrounds = campground.GetCampGrounds(park.ParkId);
-
-            while (true) {
 
                 Console.Clear();
 			    Console.WriteLine("{0, -10}", park.Name);
@@ -58,32 +53,32 @@ namespace Capstone
 			    Console.WriteLine("3) Return to Previous Screen");
 			    
 
-				    Console.WriteLine();
-				    string command = Console.ReadLine();
+			Console.WriteLine();
+			string command = Console.ReadLine();
 
-				    switch (command.ToLower())
-				    {
-					    case command_ViewCampgrounds:
-						    ViewCampGrounds(park.ParkId);
-						    break;
-					    case command_SearchReservation:
-						    SearchReservation(park.ParkId);
-						    break;
-					    case command_ReturnToPrevious:
-						    ViewParks();
-						    break;
-					    default:
-						    Console.WriteLine("The command provided was not a valid command, please try again.");
-						    break;
+			switch (command.ToLower())
+			{
+				case command_ViewCampgrounds:
+					ViewCampGrounds(park.ParkId);
+					break;
+				case command_SearchReservation:
+					SearchReservation(park.ParkId, command);
+					break;
+				case command_ReturnToPrevious:
+					ViewParks();
+					break;
+				default:
+					Console.WriteLine("The command provided was not a valid command, please try again.");
+					break;
 
-			    }
-            }
+		}
 		}
 
 		public void ViewCampGrounds(int parkId)
 		{
-			const string command_SearchReservation = "1";
-			const string command_ReturnToPrevious = "2";
+            const string command_SearchReservation = "1";
+            const string command_ReturnToPrevious = "2";
+
             CampGroundSqlDAL campground = new CampGroundSqlDAL(connectionString);
             List<CampGround> allCampgrounds = campground.GetCampGrounds(parkId);
 
@@ -95,7 +90,7 @@ namespace Capstone
 				Console.WriteLine("#{0,-10}{1,-25}{2,-10}{3,-10}${4,-10:0.00}", item.CampgroundId, item.Name, item.OpenFrom, item.OpenTo, item.DailyFee);
 				Console.WriteLine();
 			}
-			Console.WriteLine("Select a Command");
+			    Console.WriteLine("Select a Command");
 				Console.WriteLine("1) Search for Available Reservations");
 				Console.WriteLine("2) Return to Parks");
                 Console.WriteLine();
@@ -105,26 +100,40 @@ namespace Capstone
 				switch (command.ToLower())
 				{
 					case command_SearchReservation:
-						SearchReservation(parkId);
+						SearchReservation(parkId, command);
+                        
 						break;
 					case command_ReturnToPrevious:
-						ViewParks();
+					    ViewParks();
 						break;
 					default:
 						Console.WriteLine("The command provided was not a valid command, please try again.");
+                        
 						break;
 
 				}
 
 		}
-        public void SearchReservation(int parkId)
+        public void SearchReservation(int parkId, string commandOption)
         {
-            Console.WriteLine("Which campground (enter 0 to cancel)?__");
-            Console.WriteLine();
-            int campgroundId = int.Parse(Console.ReadLine());
-            Console.WriteLine();
-
-            if (campgroundId != 0)
+            if (commandOption == "1")
+            {
+                Console.WriteLine("Which campground (enter 0 to cancel)?__");
+                Console.WriteLine();
+            }
+            else if(commandOption == "2")
+            {
+                Console.WriteLine("Would you like to make a reservation in this park? (any number for yes and [0] for no)?__");
+                Console.WriteLine();
+            }
+            int inputId = int.Parse(Console.ReadLine());
+            if (inputId == 0)
+            {
+                Console.Clear();
+                ViewParks();
+                Console.WriteLine();
+            }
+            else if( inputId != 0)
             {
 
                 Console.WriteLine("What is the arrival date? __/__/____");
@@ -137,27 +146,42 @@ namespace Capstone
                 DateTime toDate = Convert.ToDateTime(stringDate);
 
                 SiteSqlDAL newAvailSites = new SiteSqlDAL(connectionString);
-                List<Site> sites = newAvailSites.GetAvailableSites(toDate, fromDate, campgroundId);
+                List<Site> sites = new List<Site>();
+
+                if (commandOption == "2")
+                {
+                    sites = newAvailSites.GetAvailableSitesFromPark(toDate, fromDate, parkId);
+
+                }
+                else if (commandOption == "1")
+                {
+                    sites = newAvailSites.GetAvailableSites(toDate, fromDate, inputId);
+                }
 
                 if (sites.Count == 0)
                 {
                     Console.Clear();
                     Console.WriteLine("there are no sites available. please enter an alternative date range");
-                    SearchReservation(parkId);
+                    SearchReservation(parkId, commandOption);
                 }
                 else
                 {
 
-                    Console.WriteLine("{0, -20}{1, -20}{2, -20}{3, -20}{4, -20}{5, -20}", "Site No.", "Max Occup.", "Accessible", "Max RV Length", "Utility", "Cost");
+                    Console.WriteLine("{0, -20}{1, -20}{2, -20}{3, -20}{4, -20}{5, -20}", "Site Id", "Max Occup.", "Accessible", "Max RV Length", "Utility", "Cost");
                     foreach (Site site in sites)
                     {
-                        Console.WriteLine("{0, -20}{1,-20}{2,-20}{3,-20}{4,-20}${5,-20:0.00}", site.SiteNumber, site.MaxOccupancy, site.Accessible, site.MaxRvLength, site.Utilities, site.TotalCost);
+                        Console.WriteLine("{0, -20}{1,-20}{2,-20}{3,-20}{4,-20}${5,-20:0.00}", site.SiteId, site.MaxOccupancy, site.Accessible, site.MaxRvLength, site.Utilities, site.TotalCost);
                     }
 
                     Console.WriteLine();
                     Console.WriteLine("Which site should be reserved (enter 0 to cancel)?__");
                     Console.WriteLine();
                     int siteId = int.Parse(Console.ReadLine());
+                    if (siteId == 0)
+                    {
+                        Console.Clear();
+                        ViewParks();
+                    }
                     Console.WriteLine();
                     Console.WriteLine("What name should the reservation be made under? __");
                     string name = Console.ReadLine();
