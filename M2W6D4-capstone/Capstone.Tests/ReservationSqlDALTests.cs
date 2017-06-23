@@ -48,7 +48,10 @@ namespace Capstone.Tests
 			result = reservation.GetAvailableSites(Convert.ToDateTime("2017-06-13"), Convert.ToDateTime("2017-06-17"), campgroundId);
 
             Assert.AreEqual(7, result.Count);
-        }
+
+			result = reservation.GetAvailableSites(Convert.ToDateTime("2017-06-01"), Convert.ToDateTime("2017-06-29"), campgroundId);
+			Assert.AreEqual(0, result.Count);
+		}
 
         [TestMethod]
         public void SetUpReservationTest()
