@@ -26,8 +26,8 @@ namespace Capstone.Models
 			}
 			set
 			{
-
-				if (value == "0")
+                
+				if (value == "False")
 				{
 					accessible = "No";
 				}
@@ -50,6 +50,10 @@ namespace Capstone.Models
 				{
 					maxRvLength = "N/A";
 				}
+                else
+                {
+                    maxRvLength = value;
+                }
 				
 			}
 		}
@@ -61,8 +65,8 @@ namespace Capstone.Models
 			}
 			set
 			{
-
-				if (value == "0")
+                
+                if (value == "False")
 				{
 					utilities = "N/A";
 				}

@@ -38,20 +38,22 @@ namespace Capstone.Tests
         {
 			int campgroundId = 1;
             List<Site> result = new List<Site>();
-            ReservationSqlDAL reservation = new ReservationSqlDAL(connectionString);
+            SiteSqlDAL sites = new SiteSqlDAL(connectionString);
 
 
-            result = reservation.GetAvailableSites(Convert.ToDateTime("2017-06-24"), Convert.ToDateTime("2017-06-25"), campgroundId);
+            result = sites.GetAvailableSites(Convert.ToDateTime("2017-06-24"), Convert.ToDateTime("2017-06-25"), campgroundId);
 
             Assert.AreEqual(11, result.Count);
 
-			result = reservation.GetAvailableSites(Convert.ToDateTime("2017-06-13"), Convert.ToDateTime("2017-06-17"), campgroundId);
+			result = sites.GetAvailableSites(Convert.ToDateTime("2017-06-13"), Convert.ToDateTime("2017-06-17"), campgroundId);
 
             Assert.AreEqual(7, result.Count);
 
-			result = reservation.GetAvailableSites(Convert.ToDateTime("2017-06-01"), Convert.ToDateTime("2017-06-29"), campgroundId);
-			Assert.AreEqual(0, result.Count);
-		}
+            result = sites.GetAvailableSites(Convert.ToDateTime("2017-06-01"), Convert.ToDateTime("2017-07-04"), campgroundId);
+
+            Assert.AreEqual(5, result.Count);
+
+        }
 
         [TestMethod]
         public void SetUpReservationTest()
